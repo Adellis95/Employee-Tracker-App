@@ -30,7 +30,7 @@ connection.query("SELECT * FROM roles", function(err, res) {
 
 connection.query("SELECT * FROM departments", function(err, res) {
     if (err) throw err;
-    listDep = res.map(dep => ({ name: departFocus.name, value: dep.id }));
+    listDep = res.map(dep => ({ name: dep.name, value: dep.id }));
 });
 
 connection.query("SELECT * FROM employees", function(err, res) {
