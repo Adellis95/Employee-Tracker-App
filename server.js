@@ -117,10 +117,14 @@ function addDep(data) {
         {
             type: "input",
             message: "What is the name of the new department",
-            name: "Department name"
+            name: "name"
         }
     ]).then(function(res) {
-        connection.query("INSERT INTO departments SET ?", {name: res.name}, function(error, res) {
+        connection.query("INSERT INTO departments SET ?", 
+        {
+            department_name: res.name
+        }, 
+        function(error, res) {
             if (error) throw error;
         });
     }).then(function() {
