@@ -5,7 +5,7 @@ const cTable = require("console.table");
 
 const connection = mysql.createConnection({
     host: "localhost",
-    PORT: 3000,
+    PORT: 3306,
     user: "root",
     password: "Mickey19",
     database: "employee_db"
@@ -117,10 +117,10 @@ function addDep(data) {
         {
             type: "input",
             message: "What is the name of the new department",
-            name: "name"
+            name: "Department name"
         }
     ]).then(function(res) {
-        connection.query("INSERT INTO departments SET ?", { name: res.name }, function(error, res) {
+        connection.query("INSERT INTO departments SET ?", {name: res.name}, function(error, res) {
             if (error) throw error;
         });
     }).then(function() {
@@ -128,6 +128,25 @@ function addDep(data) {
     }).then(function() {
         start();
     });
+}
+
+function viewDep() {
+    console.log("Departments: \n");
+    connection.query("SELECT * FROM departments", function(err, res) {
+        console.log(res);
+        start();
+    });
+}
+
+function viewRole() {
+    let query = `SELECT title AS "Title" FROM roles`;
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        console.log(" ");
+        console.table(chalk.yellow("All Roles"), results);
+        start();
+    });
+
 }
 
 function end() {
