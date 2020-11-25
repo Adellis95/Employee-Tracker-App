@@ -251,6 +251,13 @@ function addEmp(data) {
     });
 }
 
+function viewEmp() {
+    console.log("Employees: \n");
+    connection.query("SELECT * FROM employees", function(error, res) {
+        console.table(res);
+        start();
+    });
+}
 
 function end() {
     console.log("All done!");
