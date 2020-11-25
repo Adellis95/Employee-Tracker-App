@@ -137,7 +137,7 @@ function addDep(data) {
 function viewDep() {
     console.log("Departments: \n");
     connection.query("SELECT * FROM departments", function(err, res) {
-        console.log(res);
+        console.table(res);
         start();
     });
 }
@@ -185,8 +185,72 @@ function viewRole() {
         console.table(chalk.yellow("All Roles"), results);
         start();
     });
-
 }
+
+function delDep() {
+    let query = `SELECT * FROM departments`;
+    connection.query(query, function(err, res) {
+        if (err) throw err;
+        let deptChoice = res.map(data => ({
+            value: data.id,
+            name: data.name
+        }));
+        inquirer.prompt([
+            {
+                name: "dept",
+                type: "list",
+                message: "Choose department to delete.",
+                choices: listDep
+            }
+        ]).then(answers => {
+            let query = `DELETE FROM departments WHERE department_name = 'answers.id'`;
+            connection.query(query, 
+                {
+                    id: answers.id
+                }, function(err, res) {
+                    if (err) throw err;
+                    console.table(res);
+                    start();
+                });
+        });
+    });
+}
+
+
+function addEmp(data) {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What is the employee's first name?",
+            name: "firstName"
+        },
+        {
+            type: "input",
+            message: "What is the employee's last name?",
+            name: "lastName"
+        },
+        {
+            type: "list",
+            message: "What is the employee's title?",
+            name: "role",
+            choices: listRoles
+        }
+    ]).then(function(res) {
+        connection.query("INSERT INTO employees SET ?", 
+        {
+            first_name: res.firstName,
+            last_name: res.lastName,
+            role_id: res.role
+        }, function(error, res) {
+            if (error) throw error;
+        });
+    }).then(function() {
+        console.log(`-----Employee Added!-----`);
+    }).then(function() {
+        start();
+    });
+}
+
 
 function end() {
     console.log("All done!");
