@@ -3,6 +3,10 @@ const inquirer = require("inquirer");
 const chalk = require("chalk");
 const cTable = require("console.table");
 
+const logo = require('asciiart-logo');
+const config = require('./package.json');
+console.log(chalk.yellow(logo(config).render()));
+
 const connection = mysql.createConnection({
     host: "localhost",
     PORT: 3306,
