@@ -142,6 +142,41 @@ function viewDep() {
     });
 }
 
+function addRole() {
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "What is the name of new role?",
+            name: "name"
+        },
+        {
+            type: "input",
+            message: "What is the salary of new role?",
+            name: "salary"
+        },
+        {
+            type: "list",
+            message: "In which department is the new role?",
+            name: "id",
+            choices: listDep
+        }
+    ]).then(function(res) {
+        connection.query("INSERT INTO roles SET ?", 
+        {
+            title: res.name,
+            salary: res.salary,
+            department_id: res.id
+        }, function(error, res) {
+            console.log(error);
+            if (error) throw error;
+        });
+    }).then(function() {
+        console.log(`-----Role Added!-----`);
+    }).then(function() {
+        start();
+    });
+}
+
 function viewRole() {
     let query = `SELECT title AS "Title" FROM roles`;
     connection.query(query, (err, results) => {
