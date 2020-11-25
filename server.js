@@ -142,6 +142,35 @@ function viewDep() {
     });
 }
 
+function delDep() {
+    let query = `SELECT * FROM departments`;
+    connection.query(query, function(err, res) {
+        if (err) throw err;
+        let deptChoice = res.map(data => ({
+            value: data.id,
+            name: data.name
+        }));
+        inquirer.prompt([
+            {
+                name: "dept",
+                type: "list",
+                message: "Choose department to delete.",
+                choices: listDep
+            }
+        ]).then(answers => {
+            let query = `DELETE FROM departments WHERE id = ${answers.dept}`;
+            connection.query(query, 
+                {
+                    id: answers.id
+                }, function(err, res) {
+                    if (err) throw err;
+                    console.table(res);
+                    start();
+                });
+        });
+    });
+}
+
 function addRole() {
     inquirer.prompt([
         {
@@ -171,7 +200,7 @@ function addRole() {
             if (error) throw error;
         });
     }).then(function() {
-        console.log(`-----Role Added!-----`);
+        console.log(chalk.yellow(`-----Role Added!-----`));
     }).then(function() {
         start();
     });
@@ -187,35 +216,30 @@ function viewRole() {
     });
 }
 
-function delDep() {
-    let query = `SELECT * FROM departments`;
-    connection.query(query, function(err, res) {
+function delRole() {
+    let query = `SELECT * FROM roles`;
+    connection.query(query, (err, results) => {
         if (err) throw err;
-        let deptChoice = res.map(data => ({
-            value: data.id,
-            name: data.name
-        }));
         inquirer.prompt([
             {
-                name: "dept",
                 type: "list",
-                message: "Choose department to delete.",
-                choices: listDep
+                message: "Select a role to delete:",
+                name: "delRole",
+                choices: function() {
+                    let choiceArray = results.map(choice => choice.title);
+                    return choiceArray;
+                }
             }
-        ]).then(answers => {
-            let query = `DELETE FROM departments WHERE department_name = 'answers.id'`;
-            connection.query(query, 
-                {
-                    id: answers.id
-                }, function(err, res) {
-                    if (err) throw err;
-                    console.table(res);
-                    start();
-                });
+        ]).then(answer => {
+            connection.query(`DELETE FROM roles WHERE ?`, 
+            {
+                title: answer.delRole
+            });
+            console.log(chalk.yellow(`-----Role Deleted!-----`));
+            start();
         });
     });
 }
-
 
 function addEmp(data) {
     inquirer.prompt([
@@ -245,7 +269,7 @@ function addEmp(data) {
             if (error) throw error;
         });
     }).then(function() {
-        console.log(`-----Employee Added!-----`);
+        console.log(chalk.yellow(`-----Employee Added!-----`));
     }).then(function() {
         start();
     });
@@ -255,6 +279,34 @@ function viewEmp() {
     console.log("Employees: \n");
     connection.query("SELECT * FROM employees", function(error, res) {
         console.table(res);
+        start();
+    });
+}
+
+function updateRole(data) {
+    console.log("Updating Employee");
+    inquirer.prompt([
+        {
+            type: "list",
+            message: "Which employee would you like to update the role of?",
+            name: "emp",
+            choices: listEmp
+        },
+        {
+            type: "list",
+            message: "What is the employee's new title?",
+            name: "role",
+            choices: listRoles
+        }
+    ]).then(function(res) {
+        connection.query(`UPDATE employees SET role_id = ${res.role} WHERE id = ${res.emp}`, 
+        function(error, res) {
+            if (error) throw error;
+        });
+    }).then(function() {
+        console.log(`-----Employee Updated!-----`);
+        console.table(chalk.yellow("Updated Employee"));
+    }).then(function() {
         start();
     });
 }
